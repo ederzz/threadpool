@@ -1,24 +1,10 @@
-package main
+package threadpool
 
 import (
 	"errors"
-	"fmt"
 )
 
-func main() {
-	fmt.Println("custom thread pool.")
-}
-
 var errJobPoolFull = errors.New("Job's pool if full, can not add new Job.")
-
-// Job job struct
-type Job struct {
-}
-
-// Thread thread struct
-type Thread struct {
-	JobChan chan Job // channel to push job.
-}
 
 // ThreadPool thread-pool struct
 type ThreadPool struct {
@@ -72,22 +58,8 @@ func (tp ThreadPool) Start() {
 // Close close to handle jobs.
 func (tp ThreadPool) Close() {
 	// TODO: 关闭处理
+	close(tp.JObs)
+	close(tp.Threads)
 }
 
-// NewThread create one thread to excute jobs.
-func NewThread(pool chan Thread) {
-	t := Thread{}
-	t.JobChan = make(chan Job)
-	go func() {
-		for {
-			pool <- t
-			select {
-			case job := <-t.JobChan:
-				fmt.Println(job)
-				// TODO: excute
-			}
-		}
-	}()
-}
-
-// TODO: 可以提交的任务有两种：Runnable和Callable
+// TODO: test && example
