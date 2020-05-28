@@ -2,12 +2,12 @@ package threadpool
 
 // RunnableJob run方法没有返回值
 type RunnableJob interface {
-	run()
+	Run()
 }
 
 // CallableJob call方法返回一个结果
 type CallableJob interface {
-	call() interface{}
+	Call() interface{}
 }
 
 type callableTask struct {

@@ -26,6 +26,8 @@ func NewThreadPool(poolSize int, jobSize int) *ThreadPool {
 	tp.Threads = make(chan Thread, poolSize)
 	tp.initThreads()
 
+	go tp.Start()
+
 	return tp
 }
 
@@ -45,13 +47,13 @@ func (tp *ThreadPool) pushJob(job interface{}) error {
 	return nil
 }
 
-// ExcuteRunnableJob excute a runnableJob.
-func (tp *ThreadPool) ExcuteRunnableJob(job RunnableJob) error {
+// ExecuteRunnableJob execute a runnableJob.
+func (tp *ThreadPool) ExecuteRunnableJob(job RunnableJob) error {
 	return tp.pushJob(job)
 }
 
-// ExcuteCallableJob excute a callableJob.
-func (tp *ThreadPool) ExcuteCallableJob(job CallableJob) (*Future, error) {
+// ExecuteCallableJob execute a callableJob.
+func (tp *ThreadPool) ExecuteCallableJob(job CallableJob) (*Future, error) {
 	future := &Future{}
 	future.res = make(chan interface{})
 	task := callableTask{job, future}
@@ -84,4 +86,3 @@ func (tp *ThreadPool) Close() {
 }
 
 // TODO: test && example
-// TODO: 添加指针
