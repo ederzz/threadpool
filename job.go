@@ -1,7 +1,32 @@
 package threadpool
 
-// Job job struct
-type Job struct {
+// RunnableJob run方法没有返回值
+type RunnableJob interface {
+	run()
 }
 
-// TODO: 可以提交的任务有两种：Runnable和Callable
+// CallableJob call方法返回一个结果
+type CallableJob interface {
+	call() interface{}
+}
+
+type callableTask struct {
+	job    CallableJob
+	future *Future
+}
+
+// Future state of CallableJob.
+type Future struct {
+	res  chan interface{}
+	done bool
+}
+
+// Get return the res of CallableJob.
+func (f *Future) Get() interface{} {
+	return <-f.res
+}
+
+// IsDone return the finished status of CallableJob.
+func (f *Future) IsDone() bool {
+	return f.done
+}

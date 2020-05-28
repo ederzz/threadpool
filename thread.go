@@ -4,13 +4,16 @@ import "fmt"
 
 // Thread thread struct
 type Thread struct {
-	JobChan chan Job // channel to push job.
+	JobChan chan interface{} // channel to push job.
+
+	CloseSignal chan struct{}
 }
 
 // NewThread create one thread to excute jobs.
-func NewThread(pool chan Thread) {
+func NewThread(pool chan Thread, closeSinal chan struct{}) {
 	t := Thread{}
-	t.JobChan = make(chan Job)
+	t.JobChan = make(chan interface{})
+	t.CloseSignal = closeSinal
 	go func() {
 		for {
 			pool <- t
@@ -18,6 +21,8 @@ func NewThread(pool chan Thread) {
 			case job := <-t.JobChan:
 				fmt.Println(job)
 				// TODO: excute
+			case <-t.CloseSignal:
+				return
 			}
 		}
 	}()
